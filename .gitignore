@@ -3,3 +3,5 @@ dist/
 dist-types/
 *.vsix
 .DS_Store
+
+.pnpm-store/
