@@ -1,0 +1,100 @@
+{
+  "name": "inkglow-markdown-preview",
+  "displayName": "Inkglow Markdown Preview",
+  "description": "A focused Markdown preview for VS Code with Mermaid, KaTeX, syntax highlighting, and safe local assets.",
+  "version": "0.0.6",
+  "publisher": "local",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/example/inkglow-markdown-preview"
+  },
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Markdown",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "preview",
+    "mermaid",
+    "katex",
+    "math"
+  ],
+  "activationEvents": [
+    "onCommand:inkglowMarkdownPreview.open",
+    "onCommand:inkglowMarkdownPreview.openToSide"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "inkglowMarkdownPreview.open",
+        "title": "Inkglow Markdown Preview: Open Preview",
+        "enablement": "resourceLangId == markdown"
+      },
+      {
+        "command": "inkglowMarkdownPreview.openToSide",
+        "title": "Inkglow Markdown Preview: Open Preview to the Side",
+        "enablement": "resourceLangId == markdown"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "inkglowMarkdownPreview.open",
+          "when": "resourceLangId == markdown",
+          "group": "navigation@9"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "inkglowMarkdownPreview.open",
+          "when": "resourceLangId == markdown"
+        },
+        {
+          "command": "inkglowMarkdownPreview.openToSide",
+          "when": "resourceLangId == markdown"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Inkglow Markdown Preview",
+      "properties": {
+        "inkglowMarkdownPreview.allowRemoteImages": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Allow previewed documents to load images over HTTPS. Disable this for a fully local preview."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "check": "tsc --noEmit",
+    "package": "pnpm run build && npx @vscode/vsce package --no-dependencies",
+    "test": "pnpm run check && pnpm run build"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.6",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-texmath": "^1.0.0",
+    "mermaid": "^11.6.0"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.95.0",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2",
+    "@vscode/vsce": "^3.2.1"
+  }
+}

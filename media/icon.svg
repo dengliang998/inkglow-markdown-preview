@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Inkglow</title>
+  <desc id="desc">A glowing amber ink stroke folded into a Markdown angle mark on a midnight blue tile.</desc>
+  <defs>
+    <linearGradient id="ground" x1="68" y1="44" x2="460" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#172A46"/>
+      <stop offset="1" stop-color="#0B1224"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="122" y1="129" x2="389" y2="383" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF2C7"/>
+      <stop offset=".42" stop-color="#FFC85A"/>
+      <stop offset="1" stop-color="#F58A36"/>
+    </linearGradient>
+    <linearGradient id="spark" x1="173" y1="139" x2="281" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6AF1E0"/>
+      <stop offset="1" stop-color="#37BFC4"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="13" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.95  0 0.55 0 0 0.37  0 0 0 0 0.08  0 0 0 .7 0" result="colored"/>
+      <feMerge><feMergeNode in="colored"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="24" y="24" width="464" height="464" rx="118" fill="url(#ground)"/>
+  <rect x="37" y="37" width="438" height="438" rx="105" fill="none" stroke="#C6D8FF" stroke-opacity=".13" stroke-width="2"/>
+  <path d="M137 145C156 124 185 111 217 111H331C358 111 380 133 380 160V352C380 379 358 401 331 401H203C166 401 136 371 136 334V216" fill="#DCE8FF" fill-opacity=".055" stroke="#AFC9F5" stroke-opacity=".25" stroke-width="10" stroke-linecap="round"/>
+  <path d="M146 256L224 178L286 240" fill="none" stroke="url(#spark)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/>
+  <path d="M204 327L309 202C321 188 345 198 341 216L321 302C319 311 313 319 305 324L224 368C204 378 189 345 204 327Z" fill="url(#ink)" filter="url(#glow)"/>
+  <path d="M305 324L278 354L224 368L239 326L305 324Z" fill="#FFF4D3"/>
+  <path d="M238 327L221 367L277 354Z" fill="#E46F32"/>
+  <circle cx="344" cy="153" r="13" fill="#6AF1E0"/>
+  <circle cx="383" cy="192" r="6" fill="#FFC85A"/>
+</svg>

@@ -1,0 +1,7 @@
+Inkglow Markdown Preview is a standalone VS Code extension.
+
+Its rendering design and portions of its implementation are informed by:
+- BearAI Markdown — https://github.com/bearaicn/bearai-markdown
+- MDHero — https://github.com/vaibhavuk-dev/mdhero
+
+BearAI Markdown is distributed under the MIT License. If substantial source code is copied from either project into a distributed version of this extension, the applicable original MIT copyright notice and license text must be retained.

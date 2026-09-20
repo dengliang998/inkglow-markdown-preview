@@ -1,0 +1,13 @@
+.vscode/**
+.vscode-test/**
+.pnpm-store/**
+node_modules/**
+src/**
+test/**
+dist-types/**
+**/*.map
+*.ts
+esbuild.mjs
+tsconfig.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
