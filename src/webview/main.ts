@@ -58,7 +58,9 @@ const outlineButtons = new Map<string, HTMLButtonElement>();
 const outlineNodes = new Map<string, HTMLElement>();
 const outlineCollapseButtons = new Map<string, HTMLButtonElement>();
 const collapsedOutlineIds = new Set<string>();
+const SEARCH_DEBOUNCE_MS = 350;
 let searchOpen = false;
+let searchDebounceTimer: number | undefined;
 let searchMatches: HTMLElement[] = [];
 let currentSearchIndex = -1;
 
@@ -198,14 +200,14 @@ async function renderMermaidDiagrams(generation: number): Promise<void> {
 function initializeSearchControls(): void {
   searchToggle.addEventListener("click", () => setSearchOpen(!searchOpen));
   searchClose.addEventListener("click", () => setSearchOpen(false));
-  searchInput.addEventListener("input", () => updateSearchResults(true));
+  searchInput.addEventListener("input", scheduleSearch);
   searchNext.addEventListener("click", () => moveSearchResult(1));
   searchPrevious.addEventListener("click", () => moveSearchResult(-1));
 
   searchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      moveSearchResult(event.shiftKey ? -1 : 1);
+      if (!runPendingSearch()) moveSearchResult(event.shiftKey ? -1 : 1);
     }
     if (event.key === "Escape") setSearchOpen(false);
   });
@@ -461,6 +463,40 @@ function setSearchOpen(nextOpen: boolean, shouldCloseOutline = true): void {
   searchPanel.setAttribute("aria-hidden", String(!searchOpen));
   searchToggle.setAttribute("aria-expanded", String(searchOpen));
   if (searchOpen) window.requestAnimationFrame(() => searchInput.focus());
+  else clearScheduledSearch();
+}
+
+function scheduleSearch(): void {
+  clearScheduledSearch();
+  clearSearchHighlights();
+  currentSearchIndex = -1;
+
+  if (!searchInput.value.trim()) {
+    updateSearchStatus();
+    return;
+  }
+
+  searchStatus.textContent = "输入完成后开始搜索";
+  searchPrevious.disabled = true;
+  searchNext.disabled = true;
+  searchDebounceTimer = window.setTimeout(() => {
+    searchDebounceTimer = undefined;
+    updateSearchResults(true);
+  }, SEARCH_DEBOUNCE_MS);
+}
+
+function runPendingSearch(): boolean {
+  if (searchDebounceTimer === undefined) return false;
+  window.clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = undefined;
+  updateSearchResults(true);
+  return true;
+}
+
+function clearScheduledSearch(): void {
+  if (searchDebounceTimer === undefined) return;
+  window.clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = undefined;
 }
 
 function updateSearchResults(shouldSelectFirst: boolean): void {

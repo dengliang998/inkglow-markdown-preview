@@ -189,7 +189,7 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
   <section id="search-panel" class="search-panel" aria-label="Document search" aria-hidden="true">
     <div class="search-header"><strong>文档搜索</strong><button id="search-close" type="button" aria-label="Close document search">×</button></div>
     <div class="search-controls">
-      <input id="search-input" type="search" placeholder="搜索当前文档" autocomplete="off" spellcheck="false" aria-label="Search current document" />
+      <input id="search-input" type="search" placeholder="输入关键词，停顿后自动搜索" autocomplete="off" spellcheck="false" aria-label="Search current document" />
       <button id="search-previous" type="button" aria-label="Previous result">‹</button>
       <button id="search-next" type="button" aria-label="Next result">›</button>
     </div>

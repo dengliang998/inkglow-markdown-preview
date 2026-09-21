@@ -242,9 +242,9 @@ body {
 }
 
 .preview {
-  width: min(100%, 980px);
+  width: min(100%, 1320px);
   margin: 0 auto;
-  padding: 48px clamp(24px, 7vw, 80px) 96px;
+  padding: 40px clamp(20px, 3vw, 48px) 80px;
   font-family: var(--vscode-editor-font-family), var(--vscode-font-family), sans-serif;
   font-size: calc(var(--vscode-editor-font-size, 14px) + 1px);
   line-height: 1.78;
@@ -503,7 +503,7 @@ body {
 }
 
 @media (max-width: 540px) {
-  .preview { padding: 28px 20px 64px; }
+  .preview { padding: 28px 16px 64px; }
   .preview h1 { font-size: 1.8em; }
 }
 
