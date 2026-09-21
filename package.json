@@ -1,8 +1,8 @@
 {
   "name": "inkglow-markdown-preview",
-  "displayName": "Inkglow Markdown Preview",
-  "description": "A focused Markdown preview for VS Code with Mermaid, KaTeX, syntax highlighting, and safe local assets.",
-  "version": "0.0.7",
+  "displayName": "墨光 Markdown 预览",
+  "description": "一款专注的 VS Code Markdown 预览插件，支持 Mermaid、KaTeX、代码高亮和安全的本地资源访问。",
+  "version": "0.0.8",
   "publisher": "local",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -33,12 +33,12 @@
     "commands": [
       {
         "command": "inkglowMarkdownPreview.open",
-        "title": "Inkglow Markdown Preview: Open Preview",
+        "title": "墨光 Markdown 预览：打开预览",
         "enablement": "resourceLangId == markdown"
       },
       {
         "command": "inkglowMarkdownPreview.openToSide",
-        "title": "Inkglow Markdown Preview: Open Preview to the Side",
+        "title": "墨光 Markdown 预览：在侧边打开预览",
         "enablement": "resourceLangId == markdown"
       }
     ],
@@ -62,7 +62,7 @@
       ]
     },
     "configuration": {
-      "title": "Inkglow Markdown Preview",
+      "title": "墨光 Markdown 预览",
       "properties": {
         "inkglowMarkdownPreview.allowRemoteImages": {
           "type": "boolean",

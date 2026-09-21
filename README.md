@@ -1,6 +1,6 @@
-# Inkglow Markdown Preview
+# 墨光 Markdown 预览
 
-A focused, local-first Markdown preview extension for VS Code.
+一款专注于本地体验的 VS Code Markdown 预览插件。
 
 ## Included in the first release
 
@@ -16,8 +16,8 @@ A focused, local-first Markdown preview extension for VS Code.
 
 ## Commands
 
-- **Inkglow Markdown Preview: Open Preview** — opens in the active editor group by default
-- **Inkglow Markdown Preview: Open Preview to the Side**
+- **墨光 Markdown 预览：打开预览** — 默认在当前编辑器组中打开
+- **墨光 Markdown 预览：在侧边打开预览**
 
 ## Development
 
@@ -29,6 +29,6 @@ pnpm run build
 
 ## Attribution
 
-The rendering behavior was designed with reference to BearAI Markdown and its upstream MDHero project. Inkglow is a standalone VS Code implementation and does not include Tauri, Svelte, workspace browsing, editing, AI, PDF export, or presentation features from those applications.
+渲染行为参考了 BearAI Markdown 及其上游 MDHero 项目。墨光 Markdown 预览是独立的 VS Code 实现，不包含这些项目中的 Tauri、Svelte、工作区浏览、编辑、AI、PDF 导出或演示文稿功能。
 
-When distributing code derived from BearAI Markdown, retain its MIT license and the associated upstream attribution in `NOTICE`.
+分发源自 BearAI Markdown 的代码时，请保留其 MIT 许可证以及 `NOTICE` 中的上游署名。

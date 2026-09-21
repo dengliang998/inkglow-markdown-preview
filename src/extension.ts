@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const openPreview = async (toSide: boolean): Promise<void> => {
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document.languageId !== MARKDOWN_LANGUAGE_ID) {
-      void vscode.window.showInformationMessage("Inkglow Preview opens Markdown documents. Focus a .md editor first.");
+      void vscode.window.showInformationMessage("墨光 Markdown 预览仅支持 Markdown 文档。请先聚焦一个 .md 编辑器。");
       return;
     }
 

@@ -63,7 +63,7 @@ class PreviewPanel implements vscode.Disposable {
 
     this.panel = vscode.window.createWebviewPanel(
       VIEW_TYPE,
-      `${path.basename(document.fileName)} — Inkglow`,
+      `${path.basename(document.fileName)} — 墨光 Markdown 预览`,
       toSide ? vscode.ViewColumn.Beside : vscode.ViewColumn.Active,
       {
         enableScripts: true,
@@ -179,7 +179,7 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https: data:; style-src ${webview.cspSource}; font-src ${webview.cspSource}; script-src 'nonce-${nonce}'; worker-src blob:;" />
   <link rel="stylesheet" href="${styleUri}" />
-  <title>Inkglow Markdown Preview</title>
+  <title>墨光 Markdown 预览</title>
 </head>
 <body>
   <button id="search-toggle" class="search-toggle" type="button" aria-controls="search-panel" aria-expanded="false" aria-label="Search this document">
