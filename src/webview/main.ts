@@ -178,6 +178,13 @@ async function renderMermaidDiagrams(generation: number): Promise<void> {
         USE_PROFILES: { svg: true, svgFilters: true },
         ADD_ATTR: ["class", "style", "viewBox", "aria-labelledby", "role"],
       });
+
+      // Keep the original Mermaid source searchable after the code block is replaced by SVG.
+      const searchSource = document.createElement("span");
+      searchSource.className = "inkglow-search-source";
+      searchSource.setAttribute("aria-hidden", "true");
+      searchSource.textContent = source;
+      diagram.append(searchSource);
       pre.replaceWith(diagram);
     } catch (error) {
       const errorBox = document.createElement("div");
@@ -465,12 +472,13 @@ function updateSearchResults(shouldSelectFirst: boolean): void {
     return;
   }
 
-  const needle = query.toLocaleLowerCase();
+  const needle = normalizeSearchQuery(query).toLocaleLowerCase();
   const walker = document.createTreeWalker(preview, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
       const parent = node.parentElement;
       if (!parent || !node.textContent?.trim()) return NodeFilter.FILTER_REJECT;
-      if (parent.closest(".code-copy-button, .mermaid-diagram, .inkglow-search-match")) return NodeFilter.FILTER_REJECT;
+      if (parent.closest(".code-copy-button, .inkglow-search-match")) return NodeFilter.FILTER_REJECT;
+      if (parent.closest(".mermaid-diagram") && !parent.closest(".inkglow-search-source")) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
@@ -484,6 +492,12 @@ function updateSearchResults(shouldSelectFirst: boolean): void {
   currentSearchIndex = searchMatches.length ? (shouldSelectFirst ? 0 : Math.min(Math.max(currentSearchIndex, 0), searchMatches.length - 1)) : -1;
   updateSearchStatus();
   if (shouldSelectFirst && currentSearchIndex >= 0) revealCurrentSearchResult();
+}
+
+function normalizeSearchQuery(query: string): string {
+  // Markdown removes a backslash before punctuation when rendering, so users can
+  // search source text such as `tender\_flow\_apply` and still match its preview.
+  return query.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\]^_`{|}~])/g, "$1");
 }
 
 function highlightMatchesInTextNode(textNode: Text, needle: string): void {
@@ -511,6 +525,9 @@ function clearSearchHighlights(): void {
   for (const match of preview.querySelectorAll<HTMLElement>("mark.inkglow-search-match")) {
     match.replaceWith(document.createTextNode(match.textContent ?? ""));
   }
+  for (const diagram of preview.querySelectorAll<HTMLElement>(".mermaid-diagram.is-search-match")) {
+    diagram.classList.remove("is-search-match");
+  }
   searchMatches = [];
 }
 
@@ -525,8 +542,14 @@ function revealCurrentSearchResult(): void {
   const match = searchMatches[currentSearchIndex];
   if (!match) return;
   for (const item of searchMatches) item.classList.remove("is-current");
+  for (const diagram of preview.querySelectorAll<HTMLElement>(".mermaid-diagram.is-search-match")) {
+    diagram.classList.remove("is-search-match");
+  }
   match.classList.add("is-current");
-  match.scrollIntoView({
+  const diagram = match.closest<HTMLElement>(".inkglow-search-source")?.closest<HTMLElement>(".mermaid-diagram");
+  diagram?.classList.add("is-search-match");
+  const revealTarget = diagram ?? match;
+  revealTarget.scrollIntoView({
     behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     block: "center",
   });

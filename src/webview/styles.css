@@ -392,6 +392,19 @@ body {
   text-align: center;
 }
 .mermaid-diagram svg { max-width: 100%; height: auto; }
+.mermaid-diagram.is-search-match {
+  outline: 2px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+.inkglow-search-source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 .preview .katex-display { overflow-x: auto; overflow-y: hidden; padding: .55rem .1rem; }
 .preview .katex { font-size: 1.06em; }
