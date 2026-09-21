@@ -2,7 +2,7 @@
   "name": "inkglow-markdown-preview",
   "displayName": "Inkglow Markdown Preview",
   "description": "A focused Markdown preview for VS Code with Mermaid, KaTeX, syntax highlighting, and safe local assets.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "local",
   "license": "MIT",
   "icon": "media/icon.png",

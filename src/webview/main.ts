@@ -42,6 +42,7 @@ const searchStatus = requireElement<HTMLElement>("#search-status");
 const outlineToggle = requireElement<HTMLButtonElement>("#outline-toggle");
 const outlinePanel = requireElement<HTMLElement>("#outline-panel");
 const outlineClose = requireElement<HTMLButtonElement>("#outline-close");
+const outlineCollapseAll = requireElement<HTMLButtonElement>("#outline-collapse-all");
 const outlineList = requireElement<HTMLElement>("#outline-list");
 
 let assetMap: Record<string, string> = {};
@@ -50,6 +51,9 @@ let renderGeneration = 0;
 let outlineInitialized = false;
 let outlineOpen = false;
 let outlineObserver: IntersectionObserver | undefined;
+let outlineNavigationTarget: string | undefined;
+let outlineNavigationIdleTimer: number | undefined;
+let outlineNavigationMaxTimer: number | undefined;
 const outlineButtons = new Map<string, HTMLButtonElement>();
 const outlineNodes = new Map<string, HTMLElement>();
 const outlineCollapseButtons = new Map<string, HTMLButtonElement>();
@@ -210,6 +214,8 @@ function initializeSearchControls(): void {
 function initializeOutlineControls(): void {
   outlineToggle.addEventListener("click", () => setOutlineOpen(!outlineOpen));
   outlineClose.addEventListener("click", closeOutline);
+  outlineCollapseAll.addEventListener("click", toggleAllOutlineNodes);
+  window.addEventListener("scroll", scheduleOutlineNavigationRelease, { passive: true });
 
   outlineList.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
@@ -226,6 +232,7 @@ function initializeOutlineControls(): void {
 
     const heading = document.getElementById(id);
     if (!heading) return;
+    beginOutlineNavigation(id);
     heading.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
       block: "start",
@@ -241,6 +248,7 @@ function initializeOutlineControls(): void {
 }
 
 function buildOutline(): void {
+  clearOutlineNavigationLock();
   outlineObserver?.disconnect();
   outlineButtons.clear();
   outlineNodes.clear();
@@ -253,6 +261,7 @@ function buildOutline(): void {
   const hasOutline = headings.length > 0;
   outlineToggle.hidden = !hasOutline;
   outlinePanel.hidden = !hasOutline;
+  outlineCollapseAll.hidden = true;
   if (!hasOutline) {
     setOutlineOpen(false, false);
     return;
@@ -268,6 +277,7 @@ function buildOutline(): void {
   }
 
   renderOutlineEntries(createOutlineTree(headings), outlineList);
+  updateOutlineCollapseAllButton();
 
   if (!outlineInitialized) {
     outlineInitialized = true;
@@ -277,6 +287,7 @@ function buildOutline(): void {
   }
 
   outlineObserver = new IntersectionObserver((entries) => {
+    if (outlineNavigationTarget) return;
     const visible = entries
       .filter((entry) => entry.isIntersecting)
       .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -330,7 +341,8 @@ function renderOutlineEntries(entries: OutlineEntry[], container: HTMLElement): 
       collapseButton.type = "button";
       collapseButton.className = "outline-disclosure";
       collapseButton.dataset.outlineCollapse = heading.id;
-      collapseButton.setAttribute("aria-label", `Toggle subsections for ${heading.textContent?.trim() ?? "section"}`);
+      collapseButton.setAttribute("aria-label", `折叠“${heading.textContent?.trim() ?? "章节"}”的子目录`);
+      collapseButton.title = "折叠子目录";
       row.append(collapseButton);
       outlineCollapseButtons.set(heading.id, collapseButton);
     } else {
@@ -369,8 +381,58 @@ function setOutlineNodeCollapsed(id: string, collapsed: boolean): void {
 
   node.classList.toggle("is-collapsed", collapsed);
   button.setAttribute("aria-expanded", String(!collapsed));
+  button.setAttribute("aria-label", `${collapsed ? "展开" : "折叠"}“${node.querySelector<HTMLButtonElement>("[data-outline-target]")?.textContent ?? "章节"}”的子目录`);
+  button.title = collapsed ? "展开子目录" : "折叠子目录";
   if (collapsed) collapsedOutlineIds.add(id);
   else collapsedOutlineIds.delete(id);
+  updateOutlineCollapseAllButton();
+}
+
+function toggleAllOutlineNodes(): void {
+  const ids = [...outlineCollapseButtons.keys()];
+  if (!ids.length) return;
+
+  const shouldCollapse = ids.some((id) => !collapsedOutlineIds.has(id));
+  for (const id of ids) setOutlineNodeCollapsed(id, shouldCollapse);
+}
+
+function updateOutlineCollapseAllButton(): void {
+  const ids = [...outlineCollapseButtons.keys()];
+  const hasCollapsibleNodes = ids.length > 0;
+  outlineCollapseAll.hidden = !hasCollapsibleNodes;
+  if (!hasCollapsibleNodes) return;
+
+  const allCollapsed = ids.every((id) => collapsedOutlineIds.has(id));
+  outlineCollapseAll.textContent = allCollapsed ? "展开全部" : "折叠全部";
+  outlineCollapseAll.title = outlineCollapseAll.textContent;
+  outlineCollapseAll.setAttribute("aria-label", outlineCollapseAll.textContent);
+}
+
+function beginOutlineNavigation(id: string): void {
+  clearOutlineNavigationLock();
+  outlineNavigationTarget = id;
+  scheduleOutlineNavigationRelease();
+  outlineNavigationMaxTimer = window.setTimeout(finishOutlineNavigation, 2_000);
+}
+
+function scheduleOutlineNavigationRelease(): void {
+  if (!outlineNavigationTarget) return;
+  if (outlineNavigationIdleTimer) window.clearTimeout(outlineNavigationIdleTimer);
+  outlineNavigationIdleTimer = window.setTimeout(finishOutlineNavigation, 140);
+}
+
+function finishOutlineNavigation(): void {
+  const targetId = outlineNavigationTarget;
+  clearOutlineNavigationLock();
+  if (targetId) setActiveOutlineItem(targetId);
+}
+
+function clearOutlineNavigationLock(): void {
+  if (outlineNavigationIdleTimer) window.clearTimeout(outlineNavigationIdleTimer);
+  if (outlineNavigationMaxTimer) window.clearTimeout(outlineNavigationMaxTimer);
+  outlineNavigationIdleTimer = undefined;
+  outlineNavigationMaxTimer = undefined;
+  outlineNavigationTarget = undefined;
 }
 
 function setOutlineOpen(nextOpen: boolean, closeSearch = true): void {

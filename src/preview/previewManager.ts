@@ -200,7 +200,13 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
     <span>目录</span>
   </button>
   <aside id="outline-panel" class="outline-panel" aria-label="Document outline" aria-hidden="true">
-    <div class="outline-header"><strong>文档目录</strong><button id="outline-close" type="button" aria-label="Close document outline" title="关闭目录">×</button></div>
+    <div class="outline-header">
+      <strong>文档目录</strong>
+      <div class="outline-header-actions">
+        <button id="outline-collapse-all" class="outline-collapse-all" type="button" aria-label="折叠全部目录" title="折叠全部目录" hidden>折叠全部</button>
+        <button id="outline-close" type="button" aria-label="Close document outline" title="关闭目录">×</button>
+      </div>
+    </div>
     <nav id="outline-list" class="outline-list" aria-label="Headings"></nav>
   </aside>
   <main id="preview" class="preview" aria-live="polite"></main>

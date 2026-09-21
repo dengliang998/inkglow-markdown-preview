@@ -139,6 +139,11 @@
   background: var(--vscode-editorWidget-background);
   font: 600 12px var(--vscode-font-family);
 }
+.outline-header-actions {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
 .outline-header button {
   width: 27px;
   height: 27px;
@@ -150,6 +155,12 @@
   font: 20px/1 var(--vscode-font-family);
 }
 .outline-header button:hover { color: var(--vscode-foreground); background: var(--vscode-toolbar-hoverBackground); }
+.outline-header .outline-collapse-all {
+  width: auto;
+  height: 25px;
+  padding: 0 .45rem;
+  font: 500 11px var(--vscode-font-family);
+}
 .outline-list { padding: .42rem; }
 .outline-node { min-width: 0; }
 .outline-row { display: flex; align-items: center; min-width: 0; }
