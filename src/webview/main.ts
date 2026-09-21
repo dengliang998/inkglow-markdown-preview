@@ -522,9 +522,12 @@ function highlightMatchesInTextNode(textNode: Text, needle: string): void {
 }
 
 function clearSearchHighlights(): void {
+  const parentsToNormalize = new Set<Node>();
   for (const match of preview.querySelectorAll<HTMLElement>("mark.inkglow-search-match")) {
+    if (match.parentNode) parentsToNormalize.add(match.parentNode);
     match.replaceWith(document.createTextNode(match.textContent ?? ""));
   }
+  for (const parent of parentsToNormalize) parent.normalize();
   for (const diagram of preview.querySelectorAll<HTMLElement>(".mermaid-diagram.is-search-match")) {
     diagram.classList.remove("is-search-match");
   }
