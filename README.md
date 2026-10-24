@@ -18,6 +18,12 @@
 
 - **墨光 Markdown 预览：打开预览** — 默认在当前编辑器组中打开
 - **墨光 Markdown 预览：在侧边打开预览**
+- **墨光 Markdown 预览：导出 PDF** — 使用本机 Chrome 或 Chromium 生成 A4 PDF
+
+PDF 导出默认查找本机 Chrome、Microsoft Edge 或 Chromium。也可以通过
+`inkglowMarkdownPreview.chromePath` 配置浏览器可执行文件的绝对路径。未找到浏览器时，插件会生成可手动打印的 HTML 文件。
+
+PDF 导出还支持通过设置配置纸张尺寸、方向、页边距、浅色/深色主题、目录、页眉、页脚和自定义 CSS。
 
 ## Development
 

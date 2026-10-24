@@ -26,7 +26,8 @@
   ],
   "activationEvents": [
     "onCommand:inkglowMarkdownPreview.open",
-    "onCommand:inkglowMarkdownPreview.openToSide"
+    "onCommand:inkglowMarkdownPreview.openToSide",
+    "onCommand:inkglowMarkdownPreview.exportPdf"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -40,6 +41,11 @@
         "command": "inkglowMarkdownPreview.openToSide",
         "title": "墨光 Markdown 预览：在侧边打开预览",
         "enablement": "resourceLangId == markdown"
+      },
+      {
+        "command": "inkglowMarkdownPreview.exportPdf",
+        "title": "墨光 Markdown 预览：导出 PDF",
+        "enablement": "resourceLangId == markdown"
       }
     ],
     "menus": {
@@ -48,6 +54,11 @@
           "command": "inkglowMarkdownPreview.open",
           "when": "resourceLangId == markdown",
           "group": "navigation@9"
+        },
+        {
+          "command": "inkglowMarkdownPreview.exportPdf",
+          "when": "resourceLangId == markdown",
+          "group": "navigation@10"
         }
       ],
       "commandPalette": [
@@ -57,6 +68,10 @@
         },
         {
           "command": "inkglowMarkdownPreview.openToSide",
+          "when": "resourceLangId == markdown"
+        },
+        {
+          "command": "inkglowMarkdownPreview.exportPdf",
           "when": "resourceLangId == markdown"
         }
       ]
@@ -68,6 +83,56 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Allow previewed documents to load images over HTTPS. Disable this for a fully local preview."
+        },
+        "inkglowMarkdownPreview.chromePath": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional absolute path to a Chrome or Chromium executable used for PDF export."
+        },
+        "inkglowMarkdownPreview.export.paperSize": {
+          "type": "string",
+          "enum": ["A4", "A3", "Letter"],
+          "enumDescriptions": ["210 × 297 mm", "297 × 420 mm", "8.5 × 11 in"],
+          "default": "A4",
+          "markdownDescription": "Paper size used by PDF export."
+        },
+        "inkglowMarkdownPreview.export.orientation": {
+          "type": "string",
+          "enum": ["portrait", "landscape"],
+          "default": "portrait",
+          "markdownDescription": "Page orientation used by PDF export."
+        },
+        "inkglowMarkdownPreview.export.margin": {
+          "type": "string",
+          "enum": ["narrow", "normal", "wide"],
+          "default": "normal",
+          "markdownDescription": "Page margin preset used by PDF export."
+        },
+        "inkglowMarkdownPreview.export.theme": {
+          "type": "string",
+          "enum": ["light", "dark"],
+          "default": "light",
+          "markdownDescription": "Color theme used by PDF export."
+        },
+        "inkglowMarkdownPreview.export.includeOutline": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Add a table of contents as the first PDF page."
+        },
+        "inkglowMarkdownPreview.export.headerText": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional repeated header text in exported PDFs."
+        },
+        "inkglowMarkdownPreview.export.footerText": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional repeated footer text in exported PDFs."
+        },
+        "inkglowMarkdownPreview.export.customCss": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional CSS appended to the PDF export document."
         }
       }
     }

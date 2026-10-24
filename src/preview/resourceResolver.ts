@@ -17,9 +17,7 @@ export function createAssetMap(
   webview: vscode.Webview,
 ): Record<string, string> {
   const assets: Record<string, string> = {};
-  const tokens = imageParser.parse(document.getText(), {}) as unknown as MarkdownToken[];
-
-  for (const source of collectImageSources(tokens)) {
+  for (const source of collectImageSources(document.getText())) {
     if (EXTERNAL_SCHEME.test(source) || source.startsWith("#")) {
       continue;
     }
@@ -59,8 +57,9 @@ export function getParentUri(uri: vscode.Uri): vscode.Uri {
   return uri.with({ path: path.posix.dirname(uri.path) });
 }
 
-function collectImageSources(tokens: MarkdownToken[]): Set<string> {
+export function collectImageSources(markdown: string): Set<string> {
   const sources = new Set<string>();
+  const tokens = imageParser.parse(markdown, {}) as unknown as MarkdownToken[];
   const visit = (items: MarkdownToken[]): void => {
     for (const token of items) {
       if (token.type === "image") {

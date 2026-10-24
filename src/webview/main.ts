@@ -1,13 +1,8 @@
 import DOMPurify from "dompurify";
-import hljs from "highlight.js/lib/common";
-import katex from "katex";
-import MarkdownIt from "markdown-it";
-import anchor from "markdown-it-anchor";
-import taskLists from "markdown-it-task-lists";
-import texmath from "markdown-it-texmath";
 import mermaid from "mermaid";
 import "katex/dist/katex.min.css";
 import "./styles.css";
+import { createMarkdownRenderer, sanitizeMarkdownHtml, stripFrontmatter } from "./markdownRenderer";
 
 type RenderMessage = {
   type: "render";
@@ -64,7 +59,7 @@ let searchDebounceTimer: number | undefined;
 let searchMatches: HTMLElement[] = [];
 let currentSearchIndex = -1;
 
-const markdown = createRenderer();
+let markdown = createMarkdownRenderer();
 initializeSearchControls();
 initializeOutlineControls();
 vscode.postMessage({ type: "ready" });
@@ -95,56 +90,15 @@ preview.addEventListener("click", (event) => {
   }
 });
 
-function createRenderer(): MarkdownIt {
-  const renderer = new MarkdownIt({
-    html: false,
-    linkify: true,
-    typographer: true,
-    highlight: (source, language) => {
-      if (language && language !== "mermaid" && hljs.getLanguage(language)) {
-        try {
-          return hljs.highlight(source, { language }).value;
-        } catch {
-          // Fall through to escaped, unhighlighted source.
-        }
-      }
-      return "";
-    },
-  });
-
-  renderer.use(taskLists as never, { enabled: false, label: true });
-  renderer.use(anchor as never, { permalink: false });
-  renderer.use(texmath as never, { engine: katex, delimiters: "dollars" });
-
-  const originalImage = renderer.renderer.rules.image ?? ((tokens, index, options, _env, self) => self.renderToken(tokens, index, options));
-  renderer.renderer.rules.image = (tokens, index, options, env, self) => {
-    const token = tokens[index];
-    const source = token?.attrGet("src") ?? "";
-
-    if (/^https?:/i.test(source) && !remoteImagesAllowed) {
-      const label = escapeHtml(token?.content || "Remote image");
-      return `<span class="inkglow-blocked-image">Remote image blocked: ${label}</span>`;
-    }
-
-    if (assetMap[source]) token?.attrSet("src", assetMap[source]);
-    token?.attrSet("loading", "lazy");
-    return originalImage(tokens, index, options, env, self);
-  };
-
-  return renderer;
-}
-
 async function renderDocument(message: RenderMessage): Promise<void> {
   const generation = ++renderGeneration;
   assetMap = message.assets;
   remoteImagesAllowed = message.allowRemoteImages;
+  markdown = createMarkdownRenderer({ assets: assetMap, allowRemoteImages: remoteImagesAllowed });
 
   const content = stripFrontmatter(message.markdown);
   const rawHtml = markdown.render(content);
-  preview.innerHTML = DOMPurify.sanitize(rawHtml, {
-    USE_PROFILES: { html: true },
-    ADD_ATTR: ["loading", "dir"],
-  });
+  preview.innerHTML = sanitizeMarkdownHtml(rawHtml);
 
   addDirectionHints();
   buildOutline();
@@ -666,20 +620,6 @@ async function copyCodeBlock(button: HTMLButtonElement): Promise<void> {
   window.setTimeout(() => {
     button.textContent = "Copy";
   }, 1400);
-}
-
-function stripFrontmatter(markdownSource: string): string {
-  return markdownSource.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "");
-}
-
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>'"]/g, (character) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "'": "&#39;",
-    "\"": "&quot;",
-  })[character] ?? character);
 }
 
 function formatError(error: unknown): string {
