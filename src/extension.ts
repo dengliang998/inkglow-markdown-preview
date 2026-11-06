@@ -5,8 +5,6 @@ import { PreviewManager } from "./preview/previewManager";
 const MARKDOWN_LANGUAGE_ID = "markdown";
 
 export function activate(context: vscode.ExtensionContext): void {
-  const previewManager = new PreviewManager(context.extensionUri);
-
   const openPreview = async (toSide: boolean): Promise<void> => {
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document.languageId !== MARKDOWN_LANGUAGE_ID) {
@@ -17,16 +15,16 @@ export function activate(context: vscode.ExtensionContext): void {
     await previewManager.open(editor.document, toSide);
   };
 
-  const exportPdf = async (): Promise<void> => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document.languageId !== MARKDOWN_LANGUAGE_ID) {
+  const exportPdf = async (document?: vscode.TextDocument): Promise<void> => {
+    document ??= vscode.window.activeTextEditor?.document;
+    if (!document || document.languageId !== MARKDOWN_LANGUAGE_ID) {
       void vscode.window.showInformationMessage("墨光 Markdown 导出仅支持 Markdown 文档。请先聚焦一个 .md 编辑器。");
       return;
     }
 
-    const config = vscode.workspace.getConfiguration("inkglowMarkdownPreview", editor.document.uri);
+    const config = vscode.workspace.getConfiguration("inkglowMarkdownPreview", document.uri);
     await exportDocumentToPdf(
-      editor.document,
+      document,
       context.extensionUri,
       config.get<boolean>("allowRemoteImages", true),
       config.get<string>("chromePath", ""),
@@ -43,10 +41,12 @@ export function activate(context: vscode.ExtensionContext): void {
     );
   };
 
+  const previewManager = new PreviewManager(context.extensionUri, exportPdf);
+
   context.subscriptions.push(
     vscode.commands.registerCommand("inkglowMarkdownPreview.open", () => openPreview(false)),
     vscode.commands.registerCommand("inkglowMarkdownPreview.openToSide", () => openPreview(true)),
-    vscode.commands.registerCommand("inkglowMarkdownPreview.exportPdf", exportPdf),
+    vscode.commands.registerCommand("inkglowMarkdownPreview.exportPdf", () => exportPdf()),
     previewManager,
   );
 }

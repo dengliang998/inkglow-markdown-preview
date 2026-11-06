@@ -2,7 +2,7 @@
   "name": "inkglow-markdown-preview",
   "displayName": "墨光 Markdown 预览",
   "description": "一款专注的 VS Code Markdown 预览插件，支持 Mermaid、KaTeX、代码高亮和安全的本地资源访问。",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "publisher": "local",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -54,11 +54,6 @@
           "command": "inkglowMarkdownPreview.open",
           "when": "resourceLangId == markdown",
           "group": "navigation@9"
-        },
-        {
-          "command": "inkglowMarkdownPreview.exportPdf",
-          "when": "resourceLangId == markdown",
-          "group": "navigation@10"
         }
       ],
       "commandPalette": [

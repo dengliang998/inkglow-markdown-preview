@@ -10,7 +10,10 @@ export class PreviewManager implements vscode.Disposable {
   private readonly panels = new Map<string, PreviewPanel>();
   private readonly disposables: vscode.Disposable[];
 
-  public constructor(private readonly extensionUri: vscode.Uri) {
+  public constructor(
+    private readonly extensionUri: vscode.Uri,
+    private readonly exportPdf: (document: vscode.TextDocument) => Promise<void>,
+  ) {
     this.disposables = [
       vscode.workspace.onDidChangeTextDocument((event) => {
         const panel = this.panels.get(event.document.uri.toString());
@@ -28,7 +31,7 @@ export class PreviewManager implements vscode.Disposable {
       return;
     }
 
-    const panel = new PreviewPanel(this.extensionUri, document, toSide, () => {
+    const panel = new PreviewPanel(this.extensionUri, document, toSide, this.exportPdf, () => {
       this.panels.delete(key);
     });
     this.panels.set(key, panel);
@@ -53,6 +56,7 @@ class PreviewPanel implements vscode.Disposable {
     private readonly extensionUri: vscode.Uri,
     private readonly document: vscode.TextDocument,
     toSide: boolean,
+    private readonly exportPdf: (document: vscode.TextDocument) => Promise<void>,
     private readonly onDispose: () => void,
   ) {
     const localResourceRoots = uniqueUris([
@@ -123,6 +127,11 @@ class PreviewPanel implements vscode.Disposable {
   }
 
   private async handleMessage(message: WebviewMessage): Promise<void> {
+    if (message.type === "exportPdf") {
+      await this.exportPdf(this.document);
+      return;
+    }
+
     if (message.type === "ready") {
       this.webviewReady = true;
       await this.render();
@@ -182,10 +191,20 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
   <title>墨光 Markdown 预览</title>
 </head>
 <body>
+  <div class="preview-toolbar">
+  <button id="export-pdf" class="export-pdf" type="button" aria-label="导出 PDF" title="导出 PDF">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m-3-3 3 3 3-3M3 11v2h10v-2" /></svg>
+    <span>导出 PDF</span>
+  </button>
   <button id="search-toggle" class="search-toggle" type="button" aria-controls="search-panel" aria-expanded="false" aria-label="Search this document">
     <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.7" cy="6.7" r="4.25" /><path d="m10 10 3.55 3.55" /></svg>
     <span>搜索</span>
   </button>
+  <button id="outline-toggle" class="outline-toggle" type="button" aria-controls="outline-panel" aria-expanded="false" aria-label="Toggle document outline">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.25h12M2 8h12M2 12.75h12M2 2.25v2M2 7v2M2 11.75v2" /></svg>
+    <span>目录</span>
+  </button>
+  </div>
   <section id="search-panel" class="search-panel" aria-label="Document search" aria-hidden="true">
     <div class="search-header"><strong>文档搜索</strong><button id="search-close" type="button" aria-label="Close document search">×</button></div>
     <div class="search-controls">
@@ -195,10 +214,6 @@ function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri): stri
     </div>
     <div id="search-status" class="search-status" aria-live="polite">输入关键词开始搜索</div>
   </section>
-  <button id="outline-toggle" class="outline-toggle" type="button" aria-controls="outline-panel" aria-expanded="false" aria-label="Toggle document outline">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.25h12M2 8h12M2 12.75h12M2 2.25v2M2 7v2M2 11.75v2" /></svg>
-    <span>目录</span>
-  </button>
   <aside id="outline-panel" class="outline-panel" aria-label="Document outline" aria-hidden="true">
     <div class="outline-header">
       <strong>文档目录</strong>

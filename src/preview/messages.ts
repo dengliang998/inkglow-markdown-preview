@@ -19,4 +19,4 @@ export interface OpenLocalMessage {
   href: string;
 }
 
-export type WebviewMessage = ReadyMessage | OpenExternalMessage | OpenLocalMessage;
+export type WebviewMessage = ReadyMessage | OpenExternalMessage | OpenLocalMessage | { type: "exportPdf" };

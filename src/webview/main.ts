@@ -12,7 +12,7 @@ type RenderMessage = {
 };
 
 type VsCodeApi = {
-  postMessage(message: { type: "ready" } | { type: "openExternal" | "openLocal"; href: string }): void;
+  postMessage(message: { type: "ready" | "exportPdf" } | { type: "openExternal" | "openLocal"; href: string }): void;
 };
 
 type OutlineEntry = {
@@ -27,6 +27,7 @@ const vscode = acquireVsCodeApi();
 const previewRoot = document.querySelector<HTMLElement>("#preview");
 if (!previewRoot) throw new Error("Inkglow preview root is missing.");
 const preview: HTMLElement = previewRoot;
+const exportPdf = requireElement<HTMLButtonElement>("#export-pdf");
 const searchToggle = requireElement<HTMLButtonElement>("#search-toggle");
 const searchPanel = requireElement<HTMLElement>("#search-panel");
 const searchClose = requireElement<HTMLButtonElement>("#search-close");
@@ -60,6 +61,7 @@ let searchMatches: HTMLElement[] = [];
 let currentSearchIndex = -1;
 
 let markdown = createMarkdownRenderer();
+exportPdf.addEventListener("click", () => vscode.postMessage({ type: "exportPdf" }));
 initializeSearchControls();
 initializeOutlineControls();
 vscode.postMessage({ type: "ready" });

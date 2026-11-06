@@ -1,5 +1,5 @@
 
-.search-toggle {
+.search-toggle, .export-pdf {
   position: fixed;
   z-index: 5;
   top: 14px;
@@ -17,8 +17,8 @@
   font: 500 12px var(--vscode-font-family);
   backdrop-filter: blur(10px);
 }
-.search-toggle:hover { background: var(--vscode-toolbar-hoverBackground); }
-.search-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; }
+.search-toggle:hover, .export-pdf:hover { background: var(--vscode-toolbar-hoverBackground); }
+.search-toggle svg, .export-pdf svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; stroke-linejoin: round; }
 
 .search-panel {
   position: fixed;
@@ -105,6 +105,9 @@
 }
 .outline-toggle:hover { background: var(--vscode-toolbar-hoverBackground); }
 .outline-toggle svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; }
+
+.preview-toolbar { position: fixed; z-index: 5; top: 14px; right: 16px; display: flex; gap: 8px; }
+.preview-toolbar button { position: static; white-space: nowrap; }
 
 .outline-panel {
   position: fixed;
@@ -410,6 +413,7 @@ body {
 .preview .katex { font-size: 1.06em; }
 
 @media (max-width: 760px) {
+  .preview-toolbar { top: 10px; right: 10px; }
   .search-toggle {
   position: fixed;
   z-index: 5;
